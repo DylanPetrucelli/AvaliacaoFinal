@@ -5,14 +5,10 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Cria o aplicativo express:
 const app = express();
 
-// Middleware express.json() que vai ser aplicado
-// em todas as rotas:
 app.use( express.json() );
 
-// Array para simular um banco de dados de usuários:
 const users = [];
 
 const alunos = [
@@ -40,8 +36,6 @@ const alunos = [
     },
 ]
 
-// Rota register, para criar o usuário:
-
 app.post('/register', async(req,res) => {
 
     const {username, password} = req.body;
@@ -55,26 +49,16 @@ app.post('/register', async(req,res) => {
 
 });
 
-
-
-// Rota login, para retornar o jwt:
-
 app.post('/login', async(req,res) => {
 
     const {username, password} = req.body;
 
-    // Procurar o usuário e senha na "base de dados":
     const user = users.find( user => user.username === username );
-
-    // Se não achou, ou a senha decriptografada não é a correta,
-    // retorna erro:
 
     if ( !user || !( await bcrypt.compare(password, user.password) ) ) {
 
         return res.status(401).send('Login Incorreto!');
     }
-
-    // Se está tudo ok, crie e retorna o jwt:
 
     const token = jwt.sign(
         { username: user.username },
@@ -86,13 +70,6 @@ app.post('/login', async(req,res) => {
     console.log('Login efetuado pelo usuário ' + user.username);
 
 });
-
-
-
-// Middleware para verificar o jwt.
-// O token vem no 'authorization header', na forma
-// bearer blablabla.
-// Vamos quebrar no espaço e pegar o elemento [1] (o token).
 
 const authenticateJWT = (req, res, next) => {
 
@@ -142,8 +119,9 @@ const authenticateJWT = (req, res, next) => {
 
 }
 
-
 app.use(authenticateJWT);
+
+
 
 app.get("/alunos", (req, res) => {
 
@@ -261,8 +239,6 @@ app.delete("/alunos/:id", authenticateJWT, (req, res) => {
 
 
 
-
-
 app.listen(3000, () => {
-    console.log("Server started!");
+    console.log("Server started!"); //fim :)
 });
